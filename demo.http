@@ -1,0 +1,59 @@
+@host = http://localhost:8080
+
+GET {{host}}/products
+
+###
+
+GET {{host}}/products/8294320f-70c8-4714-8727-2cf861d33639
+
+###
+
+POST {{host}}/products
+Content-Type: application/json
+
+{
+    "name": "Book",
+    "Quantity": 343
+}
+
+###
+
+PUT {{host}}/products/5442feba-8855-459e-9adf-9adff3fdc3a3
+Content-Type: application/json
+
+{
+    "name": "Book",
+    "Quantity": 31
+}
+
+###
+
+DELETE {{host}}/products/c360d075-cd1d-4f9f-964a-c742f53c609a
+
+
+
+### ################# Get Metrics ################# ###
+
+
+
+GET {{host}}/metrics
+
+
+
+### ################# Generate Metrics ################# ###
+
+
+
+POST {{host}}/metrics-generator/counter/2
+
+###
+
+POST {{host}}/metrics-generator/up-down-counter/-10
+
+###
+
+POST {{host}}/metrics-generator/gauge/124
+
+###
+
+POST {{host}}/metrics-generator/histogram/15

@@ -1,0 +1,58 @@
+networks:
+  demo:
+    driver: bridge
+
+services:
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: prometheus
+    restart: always
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --enable-feature=native-histograms
+      - --web.enable-otlp-receiver
+    volumes:
+      - ./src/Prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - 9090:9090
+    networks:
+      - demo
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      start_period: 3s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:11.5.1
+    container_name: grafana
+    environment:
+      TZ: Europe/Lisbon
+      GF_AUTH_DISABLE_LOGIN_FORM: true
+      GF_AUTH_ANONYMOUS_ENABLED: true # Allow anonymous access
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin # Set the role for anonymous users to Admin
+      GF_AUTH_BASIC_ENABLED: false # Disable basic auth
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src/Grafana/data-source.yml:/etc/grafana/provisioning/datasources/data-source.yml # Data source configurations
+      - ./src/Grafana/dashboards:/etc/grafana/provisioning/dashboards # Folder containing dashboards
+      - ./src/Grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml # Dashboard configurations
+    networks:
+      - demo
+    depends_on:
+      prometheus:
+        condition: service_healthy
+
+
+  oteltui:
+    image: ymtdzzz/otel-tui:v0.4.1
+    container_name: otel-tui
+    stdin_open: true
+    tty: true
+    ports:
+      - 4317:4317
+    networks:
+      - demo
