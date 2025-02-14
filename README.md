@@ -305,14 +305,6 @@ Meter.CreateGauge<int>(
 temperature_celsius
 ```
 
-### Otel-tui
-
-`Otel-tui` is a terminal-based user interface for OpenTelemetry metrics. It provides a real-time visualization of collected metrics.
-
-```bash
-docker attach otel-tui
-```
-
 
 
 ## Examples
