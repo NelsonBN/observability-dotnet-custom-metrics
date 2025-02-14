@@ -92,7 +92,7 @@ Interlocked.Increment(ref queuePendingItems);
 Interlocked.Decrement(ref queuePendingItems);
 ```
 
-![Counter](./media/up-down-counter.svg)
+![UpDownCounter](./media/up-down-counter.svg)
 
 
 ### Gauge
@@ -143,7 +143,7 @@ meter.CreateObservableGauge(
     description: "Amount of memory used by the current process in bytes");
 ```
 
-![Counter](./media/gauge.svg)
+![Gauge](./media/gauge.svg)
 
 
 ### Histogram
@@ -203,7 +203,7 @@ builder.Services
             new ExplicitBucketHistogramConfiguration { Boundaries = [10, 50, 100, 200, 500, 1000, 5000] }));
 ```
 
-![Counter](./media/histogram.svg)
+![Histogram](./media/histogram.svg)
 
 
 ## Tags The Importance of Tags in Metrics
