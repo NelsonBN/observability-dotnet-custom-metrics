@@ -152,7 +152,7 @@ The `Histogram` measures the distribution of values over time. It groups values 
 
 **Example:**
 
-Imagine the following the request times in milliseconds. `[ 9, 24, 47, 75, 113, 421, 591, 891, 912, 1050, 1120, 1300, 1771, 1881, 5991 ]`
+Imagine the following the request times in milliseconds: `[ 9, 24, 47, 75, 113, 421, 591, 891, 912, 1050, 1120, 1300, 1771, 1881, 5991 ]`
 
 And the buckets: `[ 10, 50, 100, 200, 500, 1000, 5000 ]`
 
@@ -206,23 +206,23 @@ builder.Services
 ![Histogram](./media/histogram.svg)
 
 
-## Tags The Importance of Tags in Metrics
+## Tags - The Importance of Tags in Metrics
 
-**Tags** (or **Labels** in Prometheus) are **additional dimensions** that can be attached to a metric to segment the data and gain more granular insights.
+Tags (or Labels in Prometheus) are additional dimensions that can be attached to a metric to segment the data and gain more granular insights.
 
-Instead of having **a single global metric**, we can **filter it by different categories**, such as:
-- **HTTP Method (`GET`, `POST`, `DELETE`)**
-- **Request Status (`200`, `400`, `500`)**
-- **Service Name**
-- **Datacenter Region**
-- **User Type (`free`, `premium`)**
+Instead of having a single global metric, we can filter it by different categories, such as:
+- HTTP Method (`GET`, `POST`, `DELETE`)
+- Request Status (`200`, `400`, `500`)
+- Service Name
+- Datacenter Region
+- User Type (`free`, `premium`)
 
-> **Without tags, we only know the total value. With tags, we can analyze each dimension separately!**
+Without tags, we only know the total value. With tags, we can analyze each dimension separately!
 
 ### Why Use Tags in Metrics?
-- **Enable segmentation and filtering of data** → Example: Instead of just measuring the total number of requests, we can see **how many were `GET` vs. `POST`**;
-- **Help analyze issues and trends** → Example: We can check **if an increase in response time only happens in a specific region (e.g., `us-east-1`)**;
-- **Reduce the need to create multiple separate metrics** → Instead of creating `http_requests_get`, `http_requests_post`, `http_requests_delete`, we can **use a single `http_requests_total` metric and filter by `method="GET"`**.
+- Enable segmentation and filtering of data → Example: Instead of just measuring the total number of requests, we can see how many were `GET` vs. `POST`;
+- Help analyze issues and trends → Example: We can check if an increase in response time only happens in a specific region (e.g., `us-east-1`);
+- Reduce the need to create multiple separate metrics → Instead of creating `http_requests_get`, `http_requests_post`, `http_requests_delete`, we can use a single `http_requests_total` metric and filter by `method="GET"`.
 
 ### Example:
 
@@ -261,7 +261,7 @@ http_requests_total{method="DELETE", status="404"} 5
 
 From Prometheus' perspective, there are four types of metrics: `Counter`, `Gauge`, `Histogram`, and `Summary`. However, we will focus only on the .NET perspective and how it relates to Prometheus.
 
-We will mention specific details only when discussing how metrics are passed from .NET to Prometheus.
+We will only highlight a few specific details that come into play when exporting metrics from .NET to Prometheus.
 
 To enable the OTLP receiver, you need to configure both the Prometheus receiver and the OTLP exporter in your .NET application.
 
@@ -270,7 +270,7 @@ To enable the OTLP receiver, you need to configure both the Prometheus receiver 
 
 #### Counter from .NET to Prometheus
 
-When a `Counter` is used in .NET, it is translated into a `Counter` in Prometheus. The Prometheus exporter automatically appends the `_total` suffix to the metric name.
+When a `Counter` is used in .NET, it is likewise exported as a `Counter` to Prometheus. However, the `_total` suffix is automatically appended to the metric name.
 
 
 **For example:**
@@ -291,7 +291,7 @@ When we use the `UpDownCounter` in .NET, it is translated into a `Gauge` in Prom
 
 #### Gauge from .NET to Prometheus
 
-When a `Gauge` is used in .NET, it is translated into a `Gauge` in Prometheus. If a unit is specified in .NET, Prometheus appends it as a suffix to the metric name.
+When a `Gauge` is used in .NET, it is likewise mapped to a `Gauge` in Prometheus. If a unit is specified in .NET, Prometheus appends that unit as a suffix to the metric name.
 
 **For example:**
 
