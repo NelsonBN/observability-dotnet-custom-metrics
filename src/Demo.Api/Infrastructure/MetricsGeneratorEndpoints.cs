@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OpenTelemetry.Metrics;
 
@@ -36,66 +38,102 @@ public static class MetricsGeneratorEndpoints
         description: "Histogram of test generator");
 
 
+    private static readonly List<string> _randomTags = ["xpto", "wyz", "abs"];
+    private static readonly List<string> _randomServer = ["s1", "f5", "mini5g"];
 
     public static IEndpointRouteBuilder MapMetricsGeneratorEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/metrics-generator/counter", () =>
+        static KeyValuePair<string, object?>[] GenerateValueTags(string? myTag, string? myContext)
+        {
+            if(string.IsNullOrWhiteSpace(myTag))
+            {
+                myTag = _randomTags[Random.Shared.Next(0, _randomTags.Count)];
+            }
+
+            if(string.IsNullOrWhiteSpace(myContext))
+            {
+                myContext = _randomServer[Random.Shared.Next(0, _randomServer.Count)];
+            }
+
+            return [
+                new("MyTag", myTag),
+                new("MyContext", myContext)];
+        }
+
+        endpoints.MapPost("/metrics-generator/counter", ([FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
             var delta = Random.Shared.Next(1, 5);
-            _counter.Add(delta);
-            return Results.Ok(new { delta });
+
+            var tags = GenerateValueTags(myTag, myContext);
+
+            _counter.Add(delta, tags);
+            return Results.Ok(new { delta, tags });
         });
-        endpoints.MapPost("/metrics-generator/counter/{delta:int}", (int delta) =>
+        endpoints.MapPost("/metrics-generator/counter/{delta:int}", (int delta, [FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
-            _counter.Add(delta);
-            return Results.Ok(new { delta });
+            var tags = GenerateValueTags(myTag, myContext);
+
+            _counter.Add(delta, tags);
+            return Results.Ok(new { delta, tags });
         });
 
 
 
-        endpoints.MapPost("/metrics-generator/up-down-counter", () =>
+        endpoints.MapPost("/metrics-generator/up-down-counter", ([FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
+            var tags = GenerateValueTags(myTag, myContext);
+
             var delta = Random.Shared.Next(1, 10) - 5;
             if(delta == 0)
             {
                 delta = 1;
             }
 
-            _upDownCounter.Add(delta);
-            return Results.Ok(new { delta });
+            _upDownCounter.Add(delta, tags);
+            return Results.Ok(new { delta, tags });
         });
-        endpoints.MapPost("/metrics-generator/up-down-counter/{delta:int}", (int delta) =>
+        endpoints.MapPost("/metrics-generator/up-down-counter/{delta:int}", (int delta, [FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
-            _upDownCounter.Add(delta);
-            return Results.Ok(new { delta });
+            var tags = GenerateValueTags(myTag, myContext);
+
+            _upDownCounter.Add(delta, tags);
+            return Results.Ok(new { delta, tags });
         });
 
 
 
-        endpoints.MapPost("/metrics-generator/gauge", () =>
+        endpoints.MapPost("/metrics-generator/gauge", ([FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
+            var tags = GenerateValueTags(myTag, myContext);
+
             var value = Random.Shared.Next(1, 1_000);
-            _gauge.Record(value);
-            return Results.Ok(new { value });
+            _gauge.Record(value, tags);
+            return Results.Ok(new { value, tags });
         });
-        endpoints.MapPost("/metrics-generator/gauge/{value:int}", (int value) =>
+        endpoints.MapPost("/metrics-generator/gauge/{value:int}", (int value, [FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
-            _gauge.Record(value);
-            return Results.Ok(new { value });
+            var tags = GenerateValueTags(myTag, myContext);
+
+            _gauge.Record(value, tags);
+            return Results.Ok(new { value, tags });
         });
 
 
 
-        endpoints.MapPost("/metrics-generator/histogram", () =>
+        endpoints.MapPost("/metrics-generator/histogram", ([FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
+            var tags = GenerateValueTags(myTag, myContext);
+
             var value = Random.Shared.Next(1, 6_000);
-            _histogram.Record(value);
-            return Results.Ok(new { value });
+            _histogram.Record(value, tags);
+            return Results.Ok(new { value, tags });
         });
-        endpoints.MapPost("/metrics-generator/histogram/{value:int}", (int value) =>
+        endpoints.MapPost("/metrics-generator/histogram/{value:int}", (int value, [FromQuery] string? myTag = null, [FromQuery] string? myContext = null) =>
         {
-            _histogram.Record(value);
-            return Results.Ok(new { value });
+            var tags = GenerateValueTags(myTag, myContext);
+
+            _histogram.Record(value, tags);
+            return Results.Ok(new { value, tags });
         });
 
         return endpoints;

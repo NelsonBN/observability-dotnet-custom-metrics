@@ -44,7 +44,7 @@ GET {{host}}/metrics
 
 
 
-POST {{host}}/metrics-generator/counter/2
+POST {{host}}/metrics-generator/counter
 
 ###
 
